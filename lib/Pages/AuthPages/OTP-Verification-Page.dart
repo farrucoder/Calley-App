@@ -15,7 +15,7 @@ class Otpverificationpage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.symmetric(vertical: 40,horizontal: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -34,17 +34,10 @@ class Otpverificationpage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    otpBox(otp1),
-                    otpBox(otp2),
-                    otpBox(otp3),
-                    otpBox(otp4),
-                    otpBox(otp5),
-                    otpBox(otp6),
-                  ],
-                ),
+                for (var controller in [otp1, otp2, otp3, otp4, otp5, otp6])
+                  Expanded(
+                    child: otpBox(controller),
+                  ),
               ],
             ),
 

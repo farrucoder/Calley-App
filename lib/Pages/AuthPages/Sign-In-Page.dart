@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-
+import 'package:fluttermachinetest/Pages/AuthPages/Sign-Up-Page.dart';
+import 'package:fluttermachinetest/Pages/HomePage.dart';
 
 class Signinpage extends StatelessWidget {
-   Signinpage({super.key});
+  Signinpage({super.key});
 
   final TextEditingController emailContr = TextEditingController();
   final TextEditingController passwordContr = TextEditingController();
@@ -11,25 +12,31 @@ class Signinpage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.symmetric(vertical: 40,horizontal: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-
             const Spacer(),
-            const Text('Welcome',style:TextStyle(fontWeight: FontWeight.bold,fontSize: 25)),
-            const Text('Please sign-in to continue',style:TextStyle(fontSize: 15)),
+            const Text(
+              'Welcome',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            ),
+            const Text(
+              'Please sign-in to continue',
+              style: TextStyle(fontSize: 15),
+            ),
 
             const SizedBox(height: 10),
-            inputWidget('Email address',emailContr),
+            inputWidget('Email address', emailContr),
             const SizedBox(height: 15),
-            inputWidget('Password',passwordContr),
+            inputWidget('Password', passwordContr),
 
             Align(
               alignment: Alignment.centerRight,
-              child: TextButton(onPressed: (){
-
-              }, child: Text('Forgot Password?')),
+              child: TextButton(
+                onPressed: () {},
+                child: Text('Forgot Password?'),
+              ),
             ),
 
             const Spacer(),
@@ -38,9 +45,12 @@ class Signinpage extends StatelessWidget {
               children: [
                 const Text('Don\'t have an account?'),
 
-                  TextButton(onPressed: (){
-
-                  }, child: Text('Sign Up')),
+                TextButton(onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Signuppage()),
+                  );
+                }, child: Text('Sign Up')),
               ],
             ),
 
@@ -53,9 +63,22 @@ class Signinpage extends StatelessWidget {
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.blue[600]),
                 ),
-                  onPressed: (){
+                onPressed: () {
 
-                  }, child: Text('Sign In',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),)),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Homepage()),
+                  );
+
+                },
+                child: Text(
+                  'Sign In',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -63,10 +86,10 @@ class Signinpage extends StatelessWidget {
     );
   }
 
-  Widget inputWidget(String hinText,TextEditingController contr){
+  Widget inputWidget(String hinText, TextEditingController contr) {
     return Container(
       height: 40,
-      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(5),

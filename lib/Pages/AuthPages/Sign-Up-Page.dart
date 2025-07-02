@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/OTP-Verification-Page.dart';
+import 'package:fluttermachinetest/Pages/AuthPages/Sign-In-Page.dart';
 
 class Signuppage extends StatelessWidget {
   Signuppage({super.key});
@@ -13,7 +14,7 @@ class Signuppage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -68,7 +69,15 @@ class Signuppage extends StatelessWidget {
               children: [
                 const Text('Already have an account?'),
 
-                TextButton(onPressed: () {}, child: Text('Sign In')),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Signinpage()),
+                    );
+                  },
+                  child: Text('Sign In'),
+                ),
               ],
             ),
 
@@ -85,7 +94,8 @@ class Signuppage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Otpverificationpage(number: numberlContr.text,),
+                      builder: (context) =>
+                          Otpverificationpage(number: numberlContr.text),
                     ),
                   );
                 },
