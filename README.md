@@ -32,19 +32,18 @@ Welcome to **Calley Personal**, a modern Flutter-based mobile app designed for m
 ## 🖼️ Screenshots
 
 ### 🔐 Sign Up
-![Sign Up](https://github.com/yourusername/repo-name/assets/placeholder-signup)
+![Sign-Up-Screen](https://github.com/user-attachments/assets/61a347da-cad0-40c0-b6e7-6f659ff231e3)
 
 ### 🔑 Sign In
-![Sign In](https://github.com/yourusername/repo-name/assets/placeholder-signin)
+![Log-in-Screen](https://github.com/user-attachments/assets/c5343345-ce97-44fc-bc7e-7d4c8a3d2436)
+
 
 ### 🏠 Dashboard
-![Dashboard](https://github.com/yourusername/repo-name/assets/placeholder-dashboard)
+![Dashboard-Screen](https://github.com/user-attachments/assets/d8c0695f-778d-4d44-b2fc-7b997154f556)
+
 
 ### 📈 Call Analysis
-![Call Chart](https://github.com/yourusername/repo-name/assets/placeholder-chart)
-
-### 📋 Calling List
-![Calling List](https://github.com/yourusername/repo-name/assets/placeholder-list)
+![Call-Data-Chart-Screen](https://github.com/user-attachments/assets/f55060a8-37e0-4efa-9554-070903dd9efe)
 
 ---
 
