@@ -133,12 +133,14 @@ class _SigninpageState extends State<Signinpage> {
                             passwordContr.clear();
 
                             showCustomToast(context, 'Sign in successfully');
-                            Navigator.pushReplacement(
+
+                            Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => Homepage()
-                              ),
+                              MaterialPageRoute(builder: (context) => Homepage()),
+                                  (Route<dynamic> route) => false,
                             );
+
+
                           }
                         } else {
                           if (context.mounted) {

@@ -7,7 +7,7 @@ import '../../Services/Auth-API-Service/Auth-APIs.dart';
 class Otpverificationpage extends StatefulWidget {
   Otpverificationpage({super.key,required this.email});
 
-  final String email;
+   String email;
 
 
   @override
@@ -64,7 +64,7 @@ class _OtpverificationpageState extends State<Otpverificationpage> {
               ],
             ),
 
-            Text('${widget.email}'),
+            Text(widget.email),
 
             const Spacer(),
             Row(
@@ -120,12 +120,11 @@ class _OtpverificationpageState extends State<Otpverificationpage> {
                      });
 
                      if(context.mounted) {
-                       Navigator.pushReplacement(
+
+                       Navigator.pushAndRemoveUntil(
                          context,
-                         MaterialPageRoute(
-                             builder: (context) =>
-                                 Signinpage()
-                         ),
+                         MaterialPageRoute(builder: (context) => Signinpage()),
+                             (Route<dynamic> route) => false,
                        );
 
                        showCustomToast(context, 'OTP has been verified');

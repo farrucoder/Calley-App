@@ -93,7 +93,7 @@ class _SignuppageState extends State<Signuppage> {
 
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => Signinpage()),
                     );
@@ -136,13 +136,13 @@ class _SignuppageState extends State<Signuppage> {
                         );
 
                         if (userStatus['message'] ==
-                            'User with this email already exists') {
-                          if (context.mounted) {
+                            'User with this email already exists' && context.mounted) {
+
                             showCustomToast(
                               context,
                               '${userStatus['message']}',
                             );
-                          }
+
 
                           final otpStatus = await AuthAPIs.verifyOTP(
                             emailContr.text,
@@ -151,17 +151,24 @@ class _SignuppageState extends State<Signuppage> {
 
                           print(otpStatus['message']);
 
-                          if (otpStatus['message'] == 'OTP Verfied' &&
+                          if (otpStatus['message'] == 'User is already verfied' &&
                               context.mounted) {
+
+                            nameContr.clear();
+                            emailContr.clear();
+                            passwordContr.clear();
+                            nameContr.clear();
+                            numberlContr.clear();
+
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => Signinpage()),
+                                  (Route<dynamic> route) => false, // remove all previous routes
+                            );
+
                             setState(() {
                               _isLoading = false;
                             });
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Signinpage(),
-                              ),
-                            );
                             return;
                           } else {
                             final otpSendStatus = await AuthAPIs.sendOTP(
@@ -176,6 +183,12 @@ class _SignuppageState extends State<Signuppage> {
                             }
                             if (otpSendStatus['message'] == 'OTP sent' &&
                                 context.mounted) {
+
+                              showCustomToast(
+                                context,
+                                'OTP has been send',
+                              );
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -184,6 +197,7 @@ class _SignuppageState extends State<Signuppage> {
                                   ),
                                 ),
                               );
+
                             }
                             setState(() {
                               _isLoading = false;
@@ -203,6 +217,11 @@ class _SignuppageState extends State<Signuppage> {
                           );
                           if (otpSendStatus['message'] == 'OTP sent' &&
                               context.mounted) {
+
+                            showCustomToast(
+                              context, 'OTP has been send',
+                            );
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -211,6 +230,7 @@ class _SignuppageState extends State<Signuppage> {
                               ),
                             );
                           }
+
                           nameContr.clear();
                           emailContr.clear();
                           passwordContr.clear();
