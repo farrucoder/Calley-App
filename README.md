@@ -1,4 +1,4 @@
-# fluttermachinetest
+# Calley App
 
 This is the application for testing email auth and etc.
 
