@@ -151,7 +151,17 @@ class _SignuppageState extends State<Signuppage> {
 
                           print(otpStatus['message']);
 
-                          if (otpStatus['message'] == 'OTP Verfied') {
+                          if (otpStatus['message'] == 'OTP Verfied' &&
+                              context.mounted) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Signinpage(),
+                              ),
+                            );
                             return;
                           } else {
                             final otpSendStatus = await AuthAPIs.sendOTP(
@@ -175,6 +185,9 @@ class _SignuppageState extends State<Signuppage> {
                                 ),
                               );
                             }
+                            setState(() {
+                              _isLoading = false;
+                            });
                             return;
                           }
                         }
