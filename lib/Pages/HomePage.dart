@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttermachinetest/Pages/Dashboard-Page.dart';
+import 'package:fluttermachinetest/Services/Call-List-API-Service/Call-List-API.dart';
+import 'package:fluttermachinetest/Utils/User-Preference-Data.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class Homepage extends StatefulWidget {
@@ -11,6 +13,10 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   late YoutubePlayerController _controller;
+
+  late String? name;
+
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -26,6 +32,15 @@ class _HomepageState extends State<Homepage> {
         controlsVisibleAtStart: true,
       ),
     );
+
+    getName();
+  }
+
+  void getName() async{
+    String? fetchedName = await UserPreferencesData.getName();
+    setState(() {
+      name = fetchedName;
+    });
   }
 
   @override
@@ -52,7 +67,7 @@ class _HomepageState extends State<Homepage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Farhan Shaikh',
+                       name ?? "User",
                         style: TextStyle(color: Colors.white),
                       ),
                       Text(
@@ -93,13 +108,35 @@ class _HomepageState extends State<Homepage> {
                 SizedBox(width: 10),
                 Expanded(
                   child: InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Dashboardpage(),
-                        ),
-                      );
+                    onTap:_isLoading ? null : () async{
+
+                      final userId = await UserPreferencesData.getUserId();
+
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      final status = await CallListAPI.callList();
+
+                      if(status['clientId'] == userId) {
+                        final callId = status['_id'];
+                        await UserPreferencesData.saveCallId(callId);
+
+                        // print(userId);
+                        // print(callId);
+                        setState(() {
+                          _isLoading = false;
+                        });
+                        if (context.mounted) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Dashboardpage(callId: callId),
+                            ),
+                          );
+                        }
+                      }
+
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(horizontal: 10),
@@ -109,7 +146,7 @@ class _HomepageState extends State<Homepage> {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Center(
-                        child: Text(
+                        child: _isLoading ? CircularProgressIndicator() : Text(
                           'Start Calling Now',
                           style: TextStyle(color: Colors.white),
                         ),

@@ -1,22 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/Sign-Up-Page.dart';
 import 'package:fluttermachinetest/Pages/HomePage.dart';
+import 'package:fluttermachinetest/Reusable-Widgets/custom-Toast.dart';
+import 'package:fluttermachinetest/Services/Auth-API-Service/Auth-APIs.dart';
+import 'package:fluttermachinetest/Utils/User-Preference-Data.dart';
+import 'package:fluttermachinetest/Utils/validation-Check.dart';
 
-class Signinpage extends StatelessWidget {
+class Signinpage extends StatefulWidget {
   Signinpage({super.key});
 
+  @override
+  State<Signinpage> createState() => _SigninpageState();
+}
+
+class _SigninpageState extends State<Signinpage> {
   final TextEditingController emailContr = TextEditingController();
+
   final TextEditingController passwordContr = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 40,horizontal: 15),
+        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Spacer(),
+
+            Image.asset('lib/Assets/calleylogo.png', height: 130),
+
+            const SizedBox(height: 15),
             const Text(
               'Welcome',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
@@ -45,12 +61,15 @@ class Signinpage extends StatelessWidget {
               children: [
                 const Text('Don\'t have an account?'),
 
-                TextButton(onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Signuppage()),
-                  );
-                }, child: Text('Sign Up')),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Signuppage()),
+                    );
+                  },
+                  child: Text('Sign Up'),
+                ),
               ],
             ),
 
@@ -63,21 +82,78 @@ class Signinpage extends StatelessWidget {
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.blue[600]),
                 ),
-                onPressed: () {
+                onPressed: _isLoading
+                    ? null
+                    : () async {
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Homepage()),
-                  );
+                        if (!ValidationCheck.isFormValidLogin(
+                          email: emailContr.text,
+                          password: passwordContr.text,
+                          context: context,
+                        )) {
+                          return;
+                        }
 
-                },
-                child: Text(
-                  'Sign In',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                        setState(() {
+                          _isLoading = true;
+                        });
+
+                        final response = await AuthAPIs.loginUser(
+                          emailContr.text,
+                          passwordContr.text,
+                        );
+
+                        if (context.mounted &&
+                            response['message'] == "Login successful") {
+                          print('entered in login');
+                          final userId = response['user']['_id'];
+                          final userName = response['user']['username'];
+
+                          await UserPreferencesData.saveLoginStatus(true);
+                          await UserPreferencesData.saveEmail(emailContr.text);
+                          await UserPreferencesData.saveName(userName);
+                          await UserPreferencesData.saveUserId(userId);
+
+                          setState(() {
+                            _isLoading = false;
+                          });
+
+                          if (context.mounted) {
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Homepage(),
+                              ),
+                            );
+
+                            showCustomToast(context, 'Sign in successfully.');
+                            emailContr.clear();
+                            passwordContr.clear();
+
+                          }
+
+                        } else {
+
+                          if (context.mounted) {
+                            showCustomToast(context, response['message']);
+                          }
+
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+
+                      },
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : Text(
+                        'Sign In',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
           ],

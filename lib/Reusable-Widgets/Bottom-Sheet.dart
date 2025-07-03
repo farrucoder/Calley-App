@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttermachinetest/Pages/Test-List-DataPage.dart';
+import 'package:fluttermachinetest/Services/Call-List-API-Service/Call-List-API.dart';
 
 Future<dynamic> bottomSheet(BuildContext context) {
   return showModalBottomSheet(
@@ -53,11 +54,28 @@ Future<dynamic> bottomSheet(BuildContext context) {
 
             SizedBox(height: 10),
             InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Testlistdatapage()),
-                );
+              onTap: () async{
+
+                //call list detail data
+                print('tapped the list call');
+
+                final data = await CallListAPI.callListDetails();
+
+                if(data.isNotEmpty){
+
+                  if(context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) =>
+                          Testlistdatapage(
+                            data: data,
+                          )),
+                    );
+                  }
+
+                }
+
+
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
@@ -72,6 +90,8 @@ Future<dynamic> bottomSheet(BuildContext context) {
                 ),
               ),
             ),
+
+            const SizedBox(height: 15),
           ],
         ),
       );

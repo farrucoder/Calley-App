@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/OTP-Verification-Page.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/Sign-In-Page.dart';
+import 'package:fluttermachinetest/Reusable-Widgets/custom-Toast.dart';
+import 'package:fluttermachinetest/Services/Auth-API-Service/Auth-APIs.dart';
 
-class Signuppage extends StatelessWidget {
+import '../../Utils/User-Preference-Data.dart';
+import '../../Utils/validation-Check.dart';
+
+class Signuppage extends StatefulWidget {
   Signuppage({super.key});
 
+  @override
+  State<Signuppage> createState() => _SignuppageState();
+}
+
+class _SignuppageState extends State<Signuppage> {
   final TextEditingController emailContr = TextEditingController();
+
   final TextEditingController passwordContr = TextEditingController();
+
   final TextEditingController nameContr = TextEditingController();
+
   final TextEditingController numberlContr = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +34,10 @@ class Signuppage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Spacer(),
+
+            Image.asset('lib/Assets/calleylogo.png',height: 130),
+
+            const SizedBox(height: 15),
             const Text(
               'Welcome!',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
@@ -33,8 +52,6 @@ class Signuppage extends StatelessWidget {
             const SizedBox(height: 10),
             inputWidget('Email address', emailContr),
             const SizedBox(height: 10),
-            inputWidget('Email address', emailContr),
-            const SizedBox(height: 15),
             inputWidget('Password', passwordContr),
             const SizedBox(height: 15),
             Container(
@@ -90,16 +107,61 @@ class Signuppage extends StatelessWidget {
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.blue[600]),
                 ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          Otpverificationpage(number: numberlContr.text),
-                    ),
-                  );
+                onPressed: _isLoading ? null : ()async {
+
+                  if(!ValidationCheck.isFormValidSignup(email: emailContr.text,
+                      password: passwordContr.text, name: nameContr.text
+                      ,number: numberlContr.text,context: context)){
+                    return;
+                  }
+
+
+                  setState(() {
+                    _isLoading = true;
+                  });
+
+                  final userStatus = await AuthAPIs.registerUser(nameContr.text, emailContr.text, passwordContr.text);
+
+
+                  final otpStatus = await AuthAPIs.sendOTP(emailContr.text);
+
+                  if(context.mounted && userStatus['message'] == 'User registered' && otpStatus['message'] == 'OTP sent'){
+
+                   // print(status['message']);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Otpverificationpage(number: numberlContr.text,email: emailContr.text,
+                                password: passwordContr.text, name: nameContr.text
+                            ),
+                      ),
+                    );
+
+                    showCustomToast(context, 'OTP has been send!!!');
+
+                    nameContr.clear();
+                    emailContr.clear();
+                    passwordContr.clear();
+                    nameContr.clear();
+
+                    setState(() {
+                      _isLoading = false;
+                    });
+
+                  }else{
+
+                    if(context.mounted) {
+                     showCustomToast(context, '${otpStatus['message']},Field to send OTP!!!');
+                    }
+                  }
+
+                  setState(() {
+                    _isLoading = false;
+                  });
+
                 },
-                child: Text(
+                child: _isLoading ? CircularProgressIndicator() : Text(
                   'Sign Up',
                   style: TextStyle(
                     color: Colors.white,

@@ -1,15 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:fluttermachinetest/Pages/HomePage.dart';
 
-class Otpverificationpage extends StatelessWidget {
-  Otpverificationpage({super.key,required this.number});
+import '../../Reusable-Widgets/custom-Toast.dart';
+import '../../Services/Auth-API-Service/Auth-APIs.dart';
+import '../../Utils/User-Preference-Data.dart';
+
+class Otpverificationpage extends StatefulWidget {
+  Otpverificationpage({super.key,required this.number,required this.name,required this.email,required this.password});
 
   final String number;
+  final String name;
+  final String email;
+  final String password;
+
+  @override
+  State<Otpverificationpage> createState() => _OtpverificationpageState();
+}
+
+class _OtpverificationpageState extends State<Otpverificationpage> {
   final TextEditingController otp1 = TextEditingController();
+
   final TextEditingController otp2 = TextEditingController();
+
   final TextEditingController otp3 = TextEditingController();
+
   final TextEditingController otp4 = TextEditingController();
+
   final TextEditingController otp5 = TextEditingController();
+
   final TextEditingController otp6 = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +41,11 @@ class Otpverificationpage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Spacer(),
+
+            Image.asset('lib/Assets/calleylogo.png',height: 130),
+
+            const SizedBox(height: 15),
+
             const Text(
               'Email OTP Verification',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
@@ -41,7 +67,7 @@ class Otpverificationpage extends StatelessWidget {
               ],
             ),
 
-            Text('+91 $number'),
+            Text('+91 ${widget.number}'),
 
             const Spacer(),
             Row(
@@ -62,11 +88,64 @@ class Otpverificationpage extends StatelessWidget {
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.blue[600]),
                 ),
-                onPressed: () {
+                onPressed: _isLoading
+                    ? null
+                    :() async{
+
+
+                  final otp = otp1.text + otp2.text + otp3.text + otp4.text + otp5.text + otp6.text;
+
+                  if (otp.length < 6) {
+                    showCustomToast(context, 'Please enter complete OTP');
+                    return;
+                  }
+
+                  setState(() {
+                    _isLoading = true;
+                  });
+
+                  print(otp);
+                  final otpStatus = await AuthAPIs.verifyOTP(widget.email, otp);
+
+                  if(otpStatus['message'] == 'OTP Verfied' && context.mounted){
+
+
+                     print(otpStatus['message']);
+
+                     await UserPreferencesData.saveLoginStatus(true);
+                     await UserPreferencesData.saveEmail(widget.email);
+                     await UserPreferencesData.saveName(widget.name);
+
+                     setState(() {
+                       _isLoading = false;
+                     });
+
+                     if(context.mounted) {
+                       Navigator.push(
+                         context,
+                         MaterialPageRoute(
+                             builder: (context) =>
+                                 Homepage()
+                         ),
+                       );
+
+                       showCustomToast(context, 'Registered successfully!!!');
+                     }
+
+                   }else{
+
+                     if(context.mounted) {
+                      showCustomToast(context, '${otpStatus['message']},Field to register!!!');
+                     }
+                   }
+
+                   setState(() {
+                     _isLoading = false;
+                   });
 
                 },
-                child: Text(
-                  'Sign Up',
+                child:_isLoading ? CircularProgressIndicator() : Text(
+                  'Verify OTP',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

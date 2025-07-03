@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/Sign-In-Page.dart';
-
+import 'package:fluttermachinetest/Pages/HomePage.dart';
+import 'package:fluttermachinetest/Utils/User-Preference-Data.dart';
 
 void main() {
-
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ Force show status + navigation bar
+
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
     SystemUiOverlay.top,
     SystemUiOverlay.bottom,
   ]);
 
-  // ✅ Style status bar icons and color
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.white, // or any light color
-      statusBarIconBrightness: Brightness.dark, // so icons are visible
-      systemNavigationBarColor: Colors.white, // for bottom nav bar
+      statusBarColor: Colors.white,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.white,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
@@ -29,16 +29,34 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  Future<bool> checkLogin() async {
+    return await UserPreferencesData.getLoginStatus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Test App',
+      title: 'Calley App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Signinpage(),
+      home: FutureBuilder<bool>(
+        future: checkLogin(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          } else {
+            if (snapshot.hasData && snapshot.data == true) {
+              return const Homepage();
+            } else {
+              return Signinpage();
+            }
+          }
+        },
+      ),
     );
   }
 }

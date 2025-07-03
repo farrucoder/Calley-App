@@ -5,10 +5,22 @@ import 'package:fluttermachinetest/Reusable-Widgets/custom-Drawer.dart';
 import '../Reusable-Widgets/custom-AppBar.dart';
 
 class Testlistdatapage extends StatelessWidget {
-  const Testlistdatapage({super.key});
+  Testlistdatapage({
+    super.key,
+    required this.data
+  });
+
+  final Map<String, dynamic> data;
+
 
   @override
   Widget build(BuildContext context) {
+
+    int pendingCalls = data['pending'];
+    int doneCalls = data['called'];
+    int scheduleCalls = data['rescheduled'];
+    int totalCalls = pendingCalls + doneCalls + scheduleCalls;
+
     return Scaffold(
       appBar: CustomAppBar(),
       drawer: CustomDrawer(),
@@ -31,7 +43,7 @@ class Testlistdatapage extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            '09',
+                            totalCalls.toString(),
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -74,20 +86,20 @@ class Testlistdatapage extends StatelessWidget {
                   centerSpaceRadius: 40,
                   sections: [
                     PieChartSectionData(
-                      color: Colors.blue,
-                      value: 30,
+                      color: Colors.orange,
+                      value: pendingCalls.toDouble(),
                       radius: 55,
                       titleStyle: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     PieChartSectionData(
-                      color: Colors.orange,
-                      value: 30,
+                      color: Colors.green,
+                      value: doneCalls.toDouble(),
                       radius: 50,
                       titleStyle: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     PieChartSectionData(
-                      color: Colors.green,
-                      value: 20,
+                      color: Colors.blue,
+                      value: scheduleCalls.toDouble(),
                       radius: 50,
                       titleStyle: TextStyle(color: Colors.white, fontSize: 16),
                     ),
@@ -100,7 +112,11 @@ class Testlistdatapage extends StatelessWidget {
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [_cardData(), _cardData(), _cardData()],
+              children: [
+                _cardData('Pending',Colors.orange.withOpacity(0.2),data['pending']),
+                _cardData('Done',Colors.green.withOpacity(0.2),data['called']),
+                _cardData('Schedule',Colors.blue.withOpacity(0.2),data['rescheduled'])
+              ],
             ),
 
             SizedBox(height: 20),
@@ -122,27 +138,19 @@ class Testlistdatapage extends StatelessWidget {
               ),
             ),
 
-            // Center(
-            //   child: ElevatedButton(onPressed: (){
-            //     ElevatedButton.styleFrom(
-            //       padding: EdgeInsets.symmetric(vertical: 15,horizontal: 40),
-            //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
-            //     );
-            //   }, child: Text('Start Calling Now')),
-            // )
           ],
         ),
       ),
     );
   }
 
-  Widget _cardData() {
+  Widget _cardData(String title,Color color,int value) {
     return Expanded(
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 4),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.blue.withOpacity(0.3),
+          color: color,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -151,7 +159,7 @@ class Testlistdatapage extends StatelessWidget {
               width: 5,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.black,
+                color: color.withBlue(1),
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
@@ -159,12 +167,12 @@ class Testlistdatapage extends StatelessWidget {
             SizedBox(width: 10),
             Column(
               children: [
-                Text('Pending'),
+                Text(title),
                 SizedBox(height: 5),
                 Row(
                   children: [
                     Text(
-                      '09',
+                      value.toString(),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

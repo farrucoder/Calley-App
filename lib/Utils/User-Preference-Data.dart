@@ -32,4 +32,25 @@ class UserPreferencesData {
     return prefs.getString('name');
   }
 
+  static Future<void> saveUserId(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userID', id);
+  }
+
+  static Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userID');
+  }
+
+
+  static Future<void> saveCallId(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('callID', id);
+  }
+
+  static Future<String?> getCallId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('callID');
+  }
+
 }

@@ -3,9 +3,34 @@ import 'package:fluttermachinetest/Reusable-Widgets/custom-Drawer.dart';
 
 import '../Reusable-Widgets/Bottom-Sheet.dart';
 import '../Reusable-Widgets/custom-AppBar.dart';
+import '../Utils/User-Preference-Data.dart';
 
-class Dashboardpage extends StatelessWidget {
-  const Dashboardpage({super.key});
+class Dashboardpage extends StatefulWidget {
+  Dashboardpage({super.key,required this.callId});
+
+  final String callId;
+
+  @override
+  State<Dashboardpage> createState() => _DashboardpageState();
+}
+
+class _DashboardpageState extends State<Dashboardpage> {
+
+  String? name;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getName();
+  }
+
+  void getName() async{
+    String? fetchedName = await UserPreferencesData.getName();
+    setState(() {
+      name = fetchedName;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +69,7 @@ class Dashboardpage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Farhan Shaikh',
+                        name ?? 'User',
                         style: TextStyle(color: Colors.white),
                       ),
                       Text(
