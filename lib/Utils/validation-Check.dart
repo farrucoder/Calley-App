@@ -21,7 +21,6 @@ class ValidationCheck{
       return false;
     }
 
-    print('problem');
     return true;
   }
 
@@ -40,7 +39,7 @@ class ValidationCheck{
       showCustomToast(context, 'Please fill all the fields.');
 
       return false;
-    }else if(password.length > 8){
+    }else if(password.length < 8){
 
       showCustomToast(context, 'Password should minimum 8 digit.');
       return false;

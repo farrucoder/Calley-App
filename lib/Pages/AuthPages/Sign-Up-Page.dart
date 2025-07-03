@@ -36,7 +36,7 @@ class _SignuppageState extends State<Signuppage> {
           children: [
             const Spacer(),
 
-            Image.asset('lib/Assets/calleylogo.png',height: 130),
+            Image.asset('lib/Assets/calleylogo.png', height: 130),
 
             const SizedBox(height: 15),
             const Text(
@@ -49,11 +49,11 @@ class _SignuppageState extends State<Signuppage> {
             ),
 
             const SizedBox(height: 10),
-            inputWidget('Name', nameContr,CupertinoIcons.person),
+            inputWidget('Name', nameContr, CupertinoIcons.person),
             const SizedBox(height: 10),
-            inputWidget('Email address', emailContr,Icons.email_outlined),
+            inputWidget('Email address', emailContr, Icons.email_outlined),
             const SizedBox(height: 10),
-            inputWidget('Password', passwordContr,CupertinoIcons.eye,(){
+            inputWidget('Password', passwordContr, CupertinoIcons.eye, () {
               setState(() {
                 _passObsecure = !_passObsecure;
               });
@@ -70,7 +70,7 @@ class _SignuppageState extends State<Signuppage> {
               child: Text('+91'),
             ),
             const SizedBox(height: 15),
-            inputWidget('Mobile number', numberlContr,Icons.call),
+            inputWidget('Mobile number', numberlContr, Icons.call),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -112,67 +112,123 @@ class _SignuppageState extends State<Signuppage> {
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.blue[600]),
                 ),
-                onPressed: _isLoading ? null : ()async {
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        if (!ValidationCheck.isFormValidSignup(
+                          email: emailContr.text,
+                          password: passwordContr.text,
+                          name: nameContr.text,
+                          number: numberlContr.text,
+                          context: context,
+                        )) {
+                          return;
+                        }
 
-                  if(!ValidationCheck.isFormValidSignup(email: emailContr.text,
-                      password: passwordContr.text, name: nameContr.text
-                      ,number: numberlContr.text,context: context)){
-                    return;
-                  }
+                        setState(() {
+                          _isLoading = true;
+                        });
 
+                        final userStatus = await AuthAPIs.registerUser(
+                          nameContr.text,
+                          emailContr.text,
+                          passwordContr.text,
+                        );
 
-                  setState(() {
-                    _isLoading = true;
-                  });
+                        if (userStatus['message'] ==
+                            'User with this email already exists') {
+                          if (context.mounted) {
+                            showCustomToast(
+                              context,
+                              '${userStatus['message']}',
+                            );
+                          }
 
-                  final userStatus = await AuthAPIs.registerUser(nameContr.text, emailContr.text, passwordContr.text);
+                          final otpStatus = await AuthAPIs.verifyOTP(
+                            emailContr.text,
+                            "123456",
+                          );
 
+                          print(otpStatus['message']);
 
-                  final otpStatus = await AuthAPIs.sendOTP(emailContr.text);
+                          if (otpStatus['message'] == 'OTP Verfied') {
+                            return;
+                          } else {
+                            final otpSendStatus = await AuthAPIs.sendOTP(
+                              emailContr.text,
+                            );
 
-                  if(context.mounted && userStatus['message'] == 'User registered' && otpStatus['message'] == 'OTP sent'){
+                            if (context.mounted) {
+                              showCustomToast(
+                                context,
+                                '${otpStatus['message']},${otpSendStatus['message']}',
+                              );
+                            }
+                            if (otpSendStatus['message'] == 'OTP sent' &&
+                                context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Otpverificationpage(
+                                    email: emailContr.text,
+                                  ),
+                                ),
+                              );
+                            }
+                            return;
+                          }
+                        }
 
-                   // print(status['message']);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            Otpverificationpage(number: numberlContr.text,email: emailContr.text,
-                                password: passwordContr.text, name: nameContr.text
-                            ),
+                        if (context.mounted &&
+                            userStatus['message'] == 'User registered') {
+                          setState(() {
+                            _isLoading = false;
+                          });
+
+                          final otpSendStatus = await AuthAPIs.sendOTP(
+                            emailContr.text,
+                          );
+                          if (otpSendStatus['message'] == 'OTP sent' &&
+                              context.mounted) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Otpverificationpage(email: emailContr.text),
+                              ),
+                            );
+                          }
+                          nameContr.clear();
+                          emailContr.clear();
+                          passwordContr.clear();
+                          nameContr.clear();
+                          numberlContr.clear();
+                        } else {
+                          if (context.mounted) {
+                            print(userStatus['message']);
+                            showCustomToast(
+                              context,
+                              '${userStatus['message']}',
+                            );
+                          }
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+
+                        setState(() {
+                          _isLoading = false;
+                        });
+                      },
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    );
-
-                    showCustomToast(context, 'OTP has been send!!!');
-
-                    nameContr.clear();
-                    emailContr.clear();
-                    passwordContr.clear();
-                    nameContr.clear();
-
-                    setState(() {
-                      _isLoading = false;
-                    });
-
-                  }else{
-
-                    if(context.mounted) {
-                     showCustomToast(context, '${otpStatus['message']},Field to send OTP!!!');
-                    }
-                  }
-
-                  setState(() {
-                    _isLoading = false;
-                  });
-
-                },
-                child: _isLoading ? CircularProgressIndicator() : Text(
-                  'Sign Up',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
               ),
             ),
           ],
@@ -181,7 +237,12 @@ class _SignuppageState extends State<Signuppage> {
     );
   }
 
-  Widget inputWidget(String hinText, TextEditingController contr,IconData icon,[VoidCallback? onTap]) {
+  Widget inputWidget(
+    String hinText,
+    TextEditingController contr,
+    IconData icon, [
+    VoidCallback? onTap,
+  ]) {
     return Container(
       height: 40,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -208,13 +269,13 @@ class _SignuppageState extends State<Signuppage> {
             InkWell(
               onTap: onTap,
               child: Icon(
-                _passObsecure ? CupertinoIcons.eye_slash :  CupertinoIcons.eye,
+                _passObsecure ? CupertinoIcons.eye_slash : CupertinoIcons.eye,
               ),
             )
           else
             Icon(icon),
         ],
-      )
+      ),
     );
   }
 }

@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermachinetest/Pages/HomePage.dart';
-
+import 'package:fluttermachinetest/Pages/AuthPages/Sign-In-Page.dart';
 import '../../Reusable-Widgets/custom-Toast.dart';
 import '../../Services/Auth-API-Service/Auth-APIs.dart';
-import '../../Utils/User-Preference-Data.dart';
+
 
 class Otpverificationpage extends StatefulWidget {
-  Otpverificationpage({super.key,required this.number,required this.name,required this.email,required this.password});
+  Otpverificationpage({super.key,required this.email});
 
-  final String number;
-  final String name;
   final String email;
-  final String password;
+
 
   @override
   State<Otpverificationpage> createState() => _OtpverificationpageState();
@@ -67,7 +64,7 @@ class _OtpverificationpageState extends State<Otpverificationpage> {
               ],
             ),
 
-            Text('+91 ${widget.number}'),
+            Text('${widget.email}'),
 
             const Spacer(),
             Row(
@@ -75,7 +72,15 @@ class _OtpverificationpageState extends State<Otpverificationpage> {
               children: [
                 const Text('Don\'t receive OTP code?'),
 
-                TextButton(onPressed: () {}, child: Text('Resend OTP')),
+                TextButton(onPressed: () async{
+
+                  await AuthAPIs.sendOTP(widget.email);
+
+                  if(context.mounted) {
+                    showCustomToast(context, 'OTP has been resend');
+                  }
+
+                }, child: Text('Resend OTP')),
               ],
             ),
 
@@ -107,35 +112,29 @@ class _OtpverificationpageState extends State<Otpverificationpage> {
                   print(otp);
                   final otpStatus = await AuthAPIs.verifyOTP(widget.email, otp);
 
-                  if(otpStatus['message'] == 'OTP Verfied' && context.mounted){
-
-
-                     print(otpStatus['message']);
-
-                     await UserPreferencesData.saveLoginStatus(true);
-                     await UserPreferencesData.saveEmail(widget.email);
-                     await UserPreferencesData.saveName(widget.name);
+                  print(otpStatus['message']);
+                  if(otpStatus['message'] == 'OTP Verfied'){
 
                      setState(() {
                        _isLoading = false;
                      });
 
                      if(context.mounted) {
-                       Navigator.push(
+                       Navigator.pushReplacement(
                          context,
                          MaterialPageRoute(
                              builder: (context) =>
-                                 Homepage()
+                                 Signinpage()
                          ),
                        );
 
-                       showCustomToast(context, 'Registered successfully!!!');
+                       showCustomToast(context, 'OTP has been verified');
                      }
 
                    }else{
-
                      if(context.mounted) {
-                      showCustomToast(context, '${otpStatus['message']},Field to register!!!');
+                       print(otpStatus['message']);
+                      showCustomToast(context, '${otpStatus['message']}');
                      }
                    }
 

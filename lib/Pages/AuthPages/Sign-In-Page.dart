@@ -4,8 +4,9 @@ import 'package:fluttermachinetest/Pages/AuthPages/Sign-Up-Page.dart';
 import 'package:fluttermachinetest/Pages/HomePage.dart';
 import 'package:fluttermachinetest/Reusable-Widgets/custom-Toast.dart';
 import 'package:fluttermachinetest/Services/Auth-API-Service/Auth-APIs.dart';
-import 'package:fluttermachinetest/Utils/User-Preference-Data.dart';
 import 'package:fluttermachinetest/Utils/validation-Check.dart';
+
+import '../../Utils/User-Preference-Data.dart';
 
 class Signinpage extends StatefulWidget {
   Signinpage({super.key});
@@ -45,10 +46,9 @@ class _SigninpageState extends State<Signinpage> {
             ),
 
             const SizedBox(height: 10),
-            inputWidget('Email address', emailContr,Icons.email),
+            inputWidget('Email address', emailContr, Icons.email),
             const SizedBox(height: 15),
-            inputWidget('Password', passwordContr,CupertinoIcons.eye,(){
-
+            inputWidget('Password', passwordContr, CupertinoIcons.eye, () {
               setState(() {
                 _passObsecure = !_passObsecure;
               });
@@ -92,7 +92,6 @@ class _SigninpageState extends State<Signinpage> {
                 onPressed: _isLoading
                     ? null
                     : () async {
-
                         if (!ValidationCheck.isFormValidLogin(
                           email: emailContr.text,
                           password: passwordContr.text,
@@ -110,39 +109,40 @@ class _SigninpageState extends State<Signinpage> {
                           passwordContr.text,
                         );
 
-                        if (context.mounted &&
-                            response['message'] == "Login successful") {
-                          print('entered in login');
+
+                        if (context.mounted && response['message'] == 'Login successful') {
+
                           final userId = response['user']['_id'];
                           final userName = response['user']['username'];
 
                           await UserPreferencesData.saveLoginStatus(true);
-                          await UserPreferencesData.saveEmail(emailContr.text);
                           await UserPreferencesData.saveName(userName);
                           await UserPreferencesData.saveUserId(userId);
+
+
+                          await UserPreferencesData.saveLoginStatus(true);
+                          await UserPreferencesData.saveEmail(emailContr.text);
+
 
                           setState(() {
                             _isLoading = false;
                           });
 
                           if (context.mounted) {
-
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Homepage(),
-                              ),
-                            );
-
-                            showCustomToast(context, 'Sign in successfully.');
                             emailContr.clear();
                             passwordContr.clear();
 
+                            showCustomToast(context, 'Sign in successfully');
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Homepage()
+                              ),
+                            );
                           }
-
                         } else {
-
                           if (context.mounted) {
+                            print(response['message']);
                             showCustomToast(context, response['message']);
                           }
 
@@ -150,7 +150,6 @@ class _SigninpageState extends State<Signinpage> {
                             _isLoading = false;
                           });
                         }
-
                       },
                 child: _isLoading
                     ? CircularProgressIndicator()
@@ -169,7 +168,12 @@ class _SigninpageState extends State<Signinpage> {
     );
   }
 
-  Widget inputWidget(String hinText, TextEditingController contr,IconData icon,[VoidCallback? onTap]) {
+  Widget inputWidget(
+    String hinText,
+    TextEditingController contr,
+    IconData icon, [
+    VoidCallback? onTap,
+  ]) {
     return Container(
       height: 40,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -196,13 +200,13 @@ class _SigninpageState extends State<Signinpage> {
             InkWell(
               onTap: onTap,
               child: Icon(
-                _passObsecure ? CupertinoIcons.eye_slash :  CupertinoIcons.eye,
+                _passObsecure ? CupertinoIcons.eye_slash : CupertinoIcons.eye,
               ),
             )
           else
             Icon(icon),
         ],
-      )
+      ),
     );
   }
 }
