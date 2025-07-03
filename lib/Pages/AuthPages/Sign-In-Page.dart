@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/Sign-Up-Page.dart';
 import 'package:fluttermachinetest/Pages/HomePage.dart';
@@ -18,6 +19,7 @@ class _SigninpageState extends State<Signinpage> {
 
   final TextEditingController passwordContr = TextEditingController();
 
+  bool _passObsecure = false;
   bool _isLoading = false;
 
   @override
@@ -43,9 +45,14 @@ class _SigninpageState extends State<Signinpage> {
             ),
 
             const SizedBox(height: 10),
-            inputWidget('Email address', emailContr),
+            inputWidget('Email address', emailContr,Icons.email),
             const SizedBox(height: 15),
-            inputWidget('Password', passwordContr),
+            inputWidget('Password', passwordContr,CupertinoIcons.eye,(){
+
+              setState(() {
+                _passObsecure = !_passObsecure;
+              });
+            }),
 
             Align(
               alignment: Alignment.centerRight,
@@ -162,7 +169,7 @@ class _SigninpageState extends State<Signinpage> {
     );
   }
 
-  Widget inputWidget(String hinText, TextEditingController contr) {
+  Widget inputWidget(String hinText, TextEditingController contr,IconData icon,[VoidCallback? onTap]) {
     return Container(
       height: 40,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -170,15 +177,32 @@ class _SigninpageState extends State<Signinpage> {
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(5),
       ),
-      child: TextField(
-        textAlign: TextAlign.center,
-        controller: contr,
-        decoration: InputDecoration(
-          hintText: hinText,
-          border: InputBorder.none,
-          isCollapsed: true,
-        ),
-      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              textAlign: TextAlign.center,
+              controller: contr,
+              obscureText: hinText == 'Password' ? _passObsecure : false,
+              decoration: InputDecoration(
+                hintText: hinText,
+                border: InputBorder.none,
+                isCollapsed: true,
+              ),
+            ),
+          ),
+
+          if (hinText == 'Password')
+            InkWell(
+              onTap: onTap,
+              child: Icon(
+                _passObsecure ? CupertinoIcons.eye_slash :  CupertinoIcons.eye,
+              ),
+            )
+          else
+            Icon(icon),
+        ],
+      )
     );
   }
 }

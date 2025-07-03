@@ -1,10 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/OTP-Verification-Page.dart';
 import 'package:fluttermachinetest/Pages/AuthPages/Sign-In-Page.dart';
 import 'package:fluttermachinetest/Reusable-Widgets/custom-Toast.dart';
 import 'package:fluttermachinetest/Services/Auth-API-Service/Auth-APIs.dart';
-
-import '../../Utils/User-Preference-Data.dart';
 import '../../Utils/validation-Check.dart';
 
 class Signuppage extends StatefulWidget {
@@ -24,6 +23,8 @@ class _SignuppageState extends State<Signuppage> {
   final TextEditingController numberlContr = TextEditingController();
 
   bool _isLoading = false;
+
+  bool _passObsecure = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +49,15 @@ class _SignuppageState extends State<Signuppage> {
             ),
 
             const SizedBox(height: 10),
-            inputWidget('Name', nameContr),
+            inputWidget('Name', nameContr,CupertinoIcons.person),
             const SizedBox(height: 10),
-            inputWidget('Email address', emailContr),
+            inputWidget('Email address', emailContr,Icons.email_outlined),
             const SizedBox(height: 10),
-            inputWidget('Password', passwordContr),
+            inputWidget('Password', passwordContr,CupertinoIcons.eye,(){
+              setState(() {
+                _passObsecure = !_passObsecure;
+              });
+            }),
             const SizedBox(height: 15),
             Container(
               height: 40,
@@ -65,7 +70,7 @@ class _SignuppageState extends State<Signuppage> {
               child: Text('+91'),
             ),
             const SizedBox(height: 15),
-            inputWidget('Mobile number', numberlContr),
+            inputWidget('Mobile number', numberlContr,Icons.call),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -176,7 +181,7 @@ class _SignuppageState extends State<Signuppage> {
     );
   }
 
-  Widget inputWidget(String hinText, TextEditingController contr) {
+  Widget inputWidget(String hinText, TextEditingController contr,IconData icon,[VoidCallback? onTap]) {
     return Container(
       height: 40,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -184,15 +189,32 @@ class _SignuppageState extends State<Signuppage> {
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(5),
       ),
-      child: TextField(
-        controller: contr,
-        textAlign: TextAlign.center,
-        decoration: InputDecoration(
-          hintText: hinText,
-          border: InputBorder.none,
-          isCollapsed: true,
-        ),
-      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: contr,
+              textAlign: TextAlign.center,
+              obscureText: hinText == 'Password' ? _passObsecure : false,
+              decoration: InputDecoration(
+                hintText: hinText,
+                border: InputBorder.none,
+                isCollapsed: true,
+              ),
+            ),
+          ),
+
+          if (hinText == 'Password')
+            InkWell(
+              onTap: onTap,
+              child: Icon(
+                _passObsecure ? CupertinoIcons.eye_slash :  CupertinoIcons.eye,
+              ),
+            )
+          else
+            Icon(icon),
+        ],
+      )
     );
   }
 }

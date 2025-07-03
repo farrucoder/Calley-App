@@ -54,28 +54,22 @@ Future<dynamic> bottomSheet(BuildContext context) {
 
             SizedBox(height: 10),
             InkWell(
-              onTap: () async{
+              onTap: () async {
 
-                //call list detail data
                 print('tapped the list call');
 
                 final data = await CallListAPI.callListDetails();
 
-                if(data.isNotEmpty){
-
-                  if(context.mounted) {
+                if (data.isNotEmpty) {
+                  if (context.mounted) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>
-                          Testlistdatapage(
-                            data: data,
-                          )),
+                      MaterialPageRoute(
+                        builder: (context) => Testlistdatapage(data: data),
+                      ),
                     );
                   }
-
                 }
-
-
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
