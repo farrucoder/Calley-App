@@ -51,7 +51,6 @@ Welcome to **Calley Personal**, a modern Flutter-based mobile app designed for m
 ## 🛠️ Tech Stack
 
 - Flutter & Dart
-- Firebase Authentication
 - Local Storage using `shared_preferences`
 - RESTful API Integration
 - Custom Navigation and UI Widgets
