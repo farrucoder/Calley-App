@@ -1,4 +1,4 @@
-# 📱 Calley Personal – Auto Calling Dashboard App
+# 📱 Calley App
 
 Welcome to **Calley Personal**, a modern Flutter-based mobile app designed for managing auto-calling schedules efficiently. It supports user registration, login, OTP verification, and an intuitive dashboard for handling and analyzing call data.
 
